@@ -1,0 +1,33 @@
+.RegistrationPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+    .modal-container{
+        border: 1px solid #525252;
+        border-radius: 16px;
+
+        width: 400px;
+        
+        display: flex;
+
+        padding: 2rem;
+
+        margin: 0 auto;
+
+        flex-direction: column;
+
+        color: #fff;
+
+        .input-container {
+            margin: 16px 0;
+        }
+
+        button {
+            color: black;
+            border-radius: 8px;
+            background-color: #E2E2E2;
+        }
+    }    
+}
