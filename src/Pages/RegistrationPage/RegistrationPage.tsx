@@ -7,10 +7,13 @@ import "./RegistrationPage.scss"
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/authContext'; 
 import { doCreateUserWithEmailAndPassword } from '../../firebase/auth'; 
+import { updateProfile } from "firebase/auth";
 
 interface RegistrationPageProps {}
 
 const RegistrationPage: FC<RegistrationPageProps> = () => {
+   const [firstname, setFirstname] = useState('')
+   const [lastname, setLastname] = useState('')
    const [email, setEmail] = useState('')
    const [password, setPassword] = useState('')
    const [confirmPassword, setConfirmPassword] = useState('')
@@ -29,7 +32,12 @@ const RegistrationPage: FC<RegistrationPageProps> = () => {
       if(!isRegistering) {
          setIsRegistering(true)
          try {
-            await doCreateUserWithEmailAndPassword(email, password)
+            const userCredential = await doCreateUserWithEmailAndPassword(email, password);
+
+            // Оновлюємо профіль користувача (firstname та lastname)
+            await updateProfile(userCredential.user, {
+              displayName: `${firstname} ${lastname}`,
+            });
          }
          catch( e: any ) {
             setErrorMessage(e.message);
@@ -55,6 +63,34 @@ const RegistrationPage: FC<RegistrationPageProps> = () => {
             <form className="modal-container" onSubmit={onSubmit} autoComplete="on">
                <h1>Sign Up</h1>
                
+               {/* First name */}
+               <FormControl className="input-container" error={!!errorMessage}>
+                  <InputLabel htmlFor="email">Firstname</InputLabel>
+                  <Input
+                     id="firstname"
+                     value={firstname}
+                     onChange={handleInputChange(setFirstname)}
+                     aria-describedby="email-helper-text"
+                     type="firstname"
+                     className="input"
+                     required
+                  />
+               </FormControl>
+
+               {/* Last name */}
+               <FormControl className="input-container" error={!!errorMessage}>
+                  <InputLabel htmlFor="lastname">Lastname</InputLabel>
+                  <Input
+                     id="lastname"
+                     value={lastname}
+                     onChange={handleInputChange(setLastname)}
+                     aria-describedby="Lastname-helper-text"
+                     type="text"
+                     className="input"
+                     required
+                  />
+               </FormControl>
+
                {/* Email Field */}
                <FormControl className="input-container" error={!!errorMessage}>
                   <InputLabel htmlFor="email">Email</InputLabel>

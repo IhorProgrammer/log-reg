@@ -24,8 +24,9 @@ const HomePage: FC<HomePageProps> = ( props ) => {
                 :
                 <>
                     <h1>UID: {userData.uid}</h1>
+                    <h1>DisplayName: {userData.displayName}</h1>
                     <h1>Email: {userData.email}</h1>
-                    <h1>Email verified: {userData.emailVerified}</h1>
+
                     <Button variant="outlined" color="error" onClick={doSignOut}>
                         SignOut
                     </Button>
