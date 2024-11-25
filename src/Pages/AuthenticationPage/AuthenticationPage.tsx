@@ -2,19 +2,18 @@ import { FC, FormEvent, useState } from 'react';
 import Container from '@mui/material/Container';
 import Background from '../../Components/Background/Background';
 import { Button, FormControl, FormHelperText, Input, InputLabel } from '@mui/material';
-import "./RegistrationPage.scss"
+import "./AuthenticationPage.scss"
 
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/authContext'; 
-import { doCreateUserWithEmailAndPassword } from '../../firebase/auth'; 
+import { doCreateUserWithEmailAndPassword, doSignInWithEmailAndPassword } from '../../firebase/auth'; 
 
-interface RegistrationPageProps {}
+interface AuthenticationPageProps {}
 
-const RegistrationPage: FC<RegistrationPageProps> = () => {
+const AuthenticationPage: FC<AuthenticationPageProps> = () => {
    const [email, setEmail] = useState('')
    const [password, setPassword] = useState('')
-   const [confirmPassword, setConfirmPassword] = useState('')
-   const [isRegistering, setIsRegistering] = useState(false)
+   const [isSigningIn, setIsSigningIn] = useState(false)
    const [errorMessage, setErrorMessage] = useState('')
    
    const { userLoggedIn } = useAuth() 
@@ -25,22 +24,13 @@ const RegistrationPage: FC<RegistrationPageProps> = () => {
 
    const onSubmit = async (e: FormEvent) => {
       e.preventDefault()
-
-      if(!isRegistering) {
-         setIsRegistering(true)
+      if(!isSigningIn) {
+         setIsSigningIn(true)
          try {
-            await doCreateUserWithEmailAndPassword(email, password)
+            await doSignInWithEmailAndPassword(email, password)
          }
          catch( e: any ) {
             setErrorMessage(e.message);
-         }
-      }
-      else {
-
-         // Reg filed check
-         if (password !== confirmPassword) {
-            setErrorMessage('Passwords do not match.')
-            return
          }
       }
    }
@@ -53,7 +43,7 @@ const RegistrationPage: FC<RegistrationPageProps> = () => {
             {userLoggedIn && (<Navigate to={'/home'} replace={true} />)}
             
             <form className="modal-container" onSubmit={onSubmit} autoComplete="on">
-               <h1>Sign Up</h1>
+               <h1>Sign in</h1>
                
                {/* Email Field */}
                <FormControl className="input-container" error={!!errorMessage}>
@@ -64,7 +54,6 @@ const RegistrationPage: FC<RegistrationPageProps> = () => {
                      onChange={handleInputChange(setEmail)}
                      aria-describedby="email-helper-text"
                      type="email"
-                     className="input"
                      required
                   />
                </FormControl>
@@ -76,37 +65,22 @@ const RegistrationPage: FC<RegistrationPageProps> = () => {
                      id="password"
                      value={password}
                      onChange={handleInputChange(setPassword)}
-                     aria-describedby="password-helper-text"
                      type="password"
-                     className="input"
-                     required
-                  />
-               </FormControl>
-
-               {/* Confirm Password Field */}
-               <FormControl className="input-container" error={!!errorMessage}>
-                  <InputLabel htmlFor="confirmPassword ">Confirm Password</InputLabel>
-                  <Input
-                     id="confirmPassword"
-                     value={confirmPassword}
-                     onChange={handleInputChange(setConfirmPassword)}
-                     aria-describedby="confirmPassword-helper-text"
-                     type="password"
-                     className="input"
                      required
                   />
                </FormControl>
                <Link
-                  to={"/auth"}
+                  to={"/reg"}
                   className="link-sign"
                >
-                  Sing in
+                  Sing up
                </Link>
-               <FormHelperText className="error-message">{errorMessage}</FormHelperText>
-               
+               <FormHelperText>{errorMessage}</FormHelperText>
+
+
                {/* Submit Button */}
-               <Button type="submit" disabled={isRegistering}>
-                  {isRegistering ? 'Registering...' : 'Register'}
+               <Button type="submit" disabled={isSigningIn}>
+                  {isSigningIn ? 'Sing in...' : 'Sing in'}
                </Button>
             </form>
          </Container>
@@ -115,4 +89,4 @@ const RegistrationPage: FC<RegistrationPageProps> = () => {
 }
 
 
-export default RegistrationPage;
+export default AuthenticationPage;
