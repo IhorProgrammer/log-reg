@@ -6,7 +6,6 @@ import "./AuthenticationPage.scss"
 
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/authContext'; 
-import { doCreateUserWithEmailAndPassword, doSignInWithEmailAndPassword } from '../../firebase/auth'; 
 
 interface AuthenticationPageProps {}
 
@@ -16,7 +15,7 @@ const AuthenticationPage: FC<AuthenticationPageProps> = () => {
    const [isSigningIn, setIsSigningIn] = useState(false)
    const [errorMessage, setErrorMessage] = useState('')
    
-   const { userLoggedIn } = useAuth() 
+   const { userLoggedIn, authenticationUser } = useAuth(); 
 
    const handleInputChange = (setter: React.Dispatch<React.SetStateAction<any>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
        setter(e.target.value)
@@ -27,7 +26,8 @@ const AuthenticationPage: FC<AuthenticationPageProps> = () => {
       if(!isSigningIn) {
          setIsSigningIn(true)
          try {
-            await doSignInWithEmailAndPassword(email, password)
+            authenticationUser(email, password);
+            // await doSignInWithEmailAndPassword(email, password)
          }
          catch( e: any ) {
             setErrorMessage(e.message);
@@ -40,7 +40,7 @@ const AuthenticationPage: FC<AuthenticationPageProps> = () => {
          <Background />
 
          <Container fixed className="RegistrationPage">
-            {userLoggedIn && (<Navigate to={'/home'} replace={true} />)}
+            {userLoggedIn && (<Navigate to={'/dashboard'} replace={true} />)}
             
             <form className="modal-container" onSubmit={onSubmit} autoComplete="on">
                <h1>Sign in</h1>

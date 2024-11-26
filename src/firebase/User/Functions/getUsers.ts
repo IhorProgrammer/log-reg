@@ -1,26 +1,45 @@
-import { collection, getDocs } from "firebase/firestore";
-import { database } from "../../firebase"; 
+import { query, collection, getDocs, where } from "firebase/firestore";
+import { database } from "../../firebase";  
+import UserDTO from "../DTO/UserDTO";
 
 /**
- * Get all users from the users collection
- * @returns {Promise<User[]>} Returns an array of users
+ * Get all users from Firestore with filtering, excluding the user with the provided ID.
+ * If no ID is provided, fetch all users.
+ * @param excludeUserId - ID of the user to exclude from the result (optional).
+ * @returns {Promise<UserDTO[]>} Array of UserDTO objects excluding the user with the given ID, or all users if no ID is provided.
  */
-const getUsers = async () => {
-  const usersCollection = collection(database, "users");
+const getUsers = async (excludeUserId?: string): Promise<UserDTO[]> => {
+  const users: UserDTO[] = [];
 
-  const snapshot = await getDocs(usersCollection);
+  let usersQuery = query(collection(database, "users"));
 
-  if (snapshot.empty) {
-    console.warn("No users found");
-    return [];
+  // Apply filtering if an ID is provided
+  if (excludeUserId) {
+    usersQuery = query(usersQuery, where("__name__", "!=", excludeUserId));
   }
 
-  const users = snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
+  const snapshot = await getDocs(usersQuery);
 
-  return users;
+  if (snapshot.empty) {
+    console.error("No users found");
+    return users;  
+  }
+
+  for (const docSnapshot of snapshot.docs) {
+    const userData = docSnapshot.data();
+
+    const userReturn: UserDTO = {
+      id: docSnapshot.id,
+      firstname: userData.firstname,
+      lastname: userData.lastname,
+      email: userData.email,
+      role: undefined,  
+    };
+
+    users.push(userReturn);
+  }
+
+  return users;  
 };
 
 export default getUsers;

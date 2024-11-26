@@ -1,9 +1,8 @@
 import { FC } from "react";
 import { useAuth } from "../../context/authContext";
 import { Link } from "react-router-dom";
-import { doSignOut } from "../../firebase/auth";
 import { Button } from "@mui/material";
-import { User } from "../../firebase/User/UserFacade";
+import UserDTO from "../../firebase/User/DTO/UserDTO";
 
 interface HomePageProps
 { 
@@ -12,7 +11,7 @@ interface HomePageProps
 
 const HomePage: FC<HomePageProps> = ( props ) => {
     const user = useAuth();
-    const userData: User | null = user.currentUser;
+    const userData: UserDTO | null = user.currentUser;
 
     return (
         <main>
@@ -28,10 +27,10 @@ const HomePage: FC<HomePageProps> = ( props ) => {
                     <h1>DisplayName: {`${userData.firstname} ${userData.lastname}`  }</h1>
                     <h1>Email: {userData.email}</h1>
                     
-                    <h1>CanRead: {userData.role.read ? "Yes": "No"}</h1>
-                    <h1>CanEdit: {userData.role.edit ? "Yes": "No"}</h1>
-                    <h1>CanDelete: {userData.role.delete ? "Yes": "No"}</h1>
-                    <h1>CanAdd: {userData.role.add ? "Yes": "No"}</h1>
+                    <h1>CanRead: {userData.role?.read ? "Yes": "No"}</h1>
+                    <h1>CanEdit: {userData.role?.edit ? "Yes": "No"}</h1>
+                    <h1>CanDelete: {userData.role?.delete ? "Yes": "No"}</h1>
+                    <h1>CanAdd: {userData.role?.add ? "Yes": "No"}</h1>
 
                     <Button variant="outlined" color="error" onClick={user.signOut}>
                         SignOut

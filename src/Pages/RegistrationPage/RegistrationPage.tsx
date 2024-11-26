@@ -3,10 +3,8 @@ import Container from '@mui/material/Container';
 import Background from '../../Components/Background/Background';
 import { Button, FormControl, FormHelperText, Input, InputLabel } from '@mui/material';
 import "./RegistrationPage.scss"
-
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/authContext'; 
-import { doCreateUserWithEmailAndPassword } from '../../firebase/auth'; 
 
 interface RegistrationPageProps {}
 
@@ -19,7 +17,7 @@ const RegistrationPage: FC<RegistrationPageProps> = () => {
    const [isRegistering, setIsRegistering] = useState(false)
    const [errorMessage, setErrorMessage] = useState('')
    
-   const { userLoggedIn } = useAuth() 
+   const { userLoggedIn, registrationUser } = useAuth() 
 
    const handleInputChange = (setter: React.Dispatch<React.SetStateAction<any>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
        setter(e.target.value)
@@ -31,24 +29,15 @@ const RegistrationPage: FC<RegistrationPageProps> = () => {
       if(!isRegistering) {
          setIsRegistering(true)
          try {
-            const userCredential = await doCreateUserWithEmailAndPassword(email, password);
-            if(userCredential !== null) {
-               // Оновлюємо профіль користувача (firstname та lastname)
-               // await updateProfile(userCredential.user, {
-               //   displayName: `${firstname} ${lastname}`,
-               // });
+            if (password !== confirmPassword) {
+               setErrorMessage('Passwords do not match.')
+               return
             }
+
+            registrationUser(firstname, lastname, email, password);
          }
          catch( e: any ) {
             setErrorMessage(e.message);
-         }
-      }
-      else {
-
-         // Reg filed check
-         if (password !== confirmPassword) {
-            setErrorMessage('Passwords do not match.')
-            return
          }
       }
    }
@@ -58,7 +47,7 @@ const RegistrationPage: FC<RegistrationPageProps> = () => {
          <Background />
 
          <Container fixed className="RegistrationPage">
-            {userLoggedIn && (<Navigate to={'/home'} replace={true} />)}
+            {userLoggedIn && (<Navigate to={'/dashboard'} replace={true} />)}
             
             <form className="modal-container" onSubmit={onSubmit} autoComplete="on">
                <h1>Sign Up</h1>
