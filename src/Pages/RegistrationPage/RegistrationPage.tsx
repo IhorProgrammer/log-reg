@@ -7,7 +7,6 @@ import "./RegistrationPage.scss"
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/authContext'; 
 import { doCreateUserWithEmailAndPassword } from '../../firebase/auth'; 
-import { updateProfile } from "firebase/auth";
 
 interface RegistrationPageProps {}
 
@@ -33,11 +32,12 @@ const RegistrationPage: FC<RegistrationPageProps> = () => {
          setIsRegistering(true)
          try {
             const userCredential = await doCreateUserWithEmailAndPassword(email, password);
-
-            // Оновлюємо профіль користувача (firstname та lastname)
-            await updateProfile(userCredential.user, {
-              displayName: `${firstname} ${lastname}`,
-            });
+            if(userCredential !== null) {
+               // Оновлюємо профіль користувача (firstname та lastname)
+               // await updateProfile(userCredential.user, {
+               //   displayName: `${firstname} ${lastname}`,
+               // });
+            }
          }
          catch( e: any ) {
             setErrorMessage(e.message);
