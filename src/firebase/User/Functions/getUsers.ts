@@ -1,6 +1,8 @@
 import { query, collection, getDocs, where } from "firebase/firestore";
 import { database } from "../../firebase";  
 import UserDTO from "../DTO/UserDTO";
+import getAllRoles from "./getAllRoles";
+
 
 /**
  * Get all users from Firestore with filtering, excluding the user with the provided ID.
@@ -10,6 +12,8 @@ import UserDTO from "../DTO/UserDTO";
  */
 const getUsers = async (excludeUserId?: string): Promise<UserDTO[]> => {
   const users: UserDTO[] = [];
+
+  const roles = await getAllRoles();
 
   let usersQuery = query(collection(database, "users"));
 
@@ -28,13 +32,16 @@ const getUsers = async (excludeUserId?: string): Promise<UserDTO[]> => {
   for (const docSnapshot of snapshot.docs) {
     const userData = docSnapshot.data();
 
+    const userRole = roles.find(role => role.id === userData.role?.id); 
+
     const userReturn: UserDTO = {
       id: docSnapshot.id,
       firstname: userData.firstname,
       lastname: userData.lastname,
       email: userData.email,
-      role: undefined,  
+      role: userRole || undefined,  
     };
+
 
     users.push(userReturn);
   }
